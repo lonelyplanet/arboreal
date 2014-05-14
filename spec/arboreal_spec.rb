@@ -166,7 +166,7 @@ describe "Arboreal hierarchy" do
     describe "#ancestors" do
 
       it "returns all ancestors, depth-first" do
-        @melbourne.ancestors.all.should == [@australia, @victoria]
+        @melbourne.ancestors.to_a.should == [@australia, @victoria]
       end
 
     end
@@ -231,7 +231,7 @@ describe "Arboreal hierarchy" do
   describe "node created using find_or_create_by" do
 
     before do
-      @tasmania = @australia.children.find_or_create_by_name("Tasmania")
+      @tasmania = @australia.children.find_or_create_by(name: "Tasmania")
     end
 
     it "still has the right ancestry" do
@@ -248,7 +248,7 @@ describe "Arboreal hierarchy" do
     end
 
     it "re-populates all ancestry_strings" do
-      Node.count(:conditions => {:ancestry_string => 'corrupt'}).should == 0
+      Node.where(ancestry_string: 'corrupt').count.should == 0
     end
 
     it "fixes the hierarchy" do

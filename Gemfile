@@ -1,6 +1,6 @@
-source :rubygems
+source 'http://rubygems.org'
 
-ENV["AR_VERSION"] ||= "~> 2.3.5"
+ENV["AR_VERSION"] ||= "~> 4.0.0"
 
 gem "activerecord", ENV["AR_VERSION"], :require => "active_record"
 

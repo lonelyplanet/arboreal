@@ -39,4 +39,6 @@ DB_CONFIGS = {
 test_adapter = (ENV["AR_ADAPTER"] || "sqlite3")
 test_db_config = DB_CONFIGS[test_adapter].merge(:adapter => test_adapter)
 
+I18n.enforce_available_locales = false
+
 ActiveRecord::Base.establish_connection(test_db_config)

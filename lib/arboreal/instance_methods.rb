@@ -13,22 +13,22 @@ module Arboreal
 
     # return a scope matching all ancestors of this node
     def ancestors
-      model_base_class.scoped(:conditions => ancestor_conditions, :order => :ancestry_string)
+      model_base_class.where(ancestor_conditions).order(:ancestry_string)
     end
 
     # return a scope matching all descendants of this node
     def descendants
-      model_base_class.scoped(:conditions => descendant_conditions)
+      model_base_class.where(descendant_conditions)
     end
 
     # return a scope matching all descendants of this node, AND the node itself
     def subtree
-      model_base_class.scoped(:conditions => subtree_conditions)
+      model_base_class.where(subtree_conditions)
     end
 
     # return a scope matching all siblings of this node (NOT including the node itself)
     def siblings
-      model_base_class.scoped(:conditions => sibling_conditions)
+      model_base_class.where(sibling_conditions)
     end
 
     # return the root of the tree
@@ -70,7 +70,7 @@ module Arboreal
 
     def populate_ancestry_string
       self.ancestry_string = nil if parent_id_changed?
-      model_base_class.send(:with_exclusive_scope) do
+      model_base_class.unscoped do
         self.ancestry_string ||= parent ? parent.path_string : "-"
       end
     end
@@ -96,7 +96,7 @@ module Arboreal
     def apply_ancestry_change_to_descendants
       if @ancestry_change
         old_ancestry_string, new_ancestry_string = *@ancestry_change
-        connection.update(<<-SQL.squish)
+        self.class.connection.update(<<-SQL.squish)
           UPDATE #{table_name}
             SET ancestry_string = REPLACE(ancestry_string, '#{old_ancestry_string}', '#{new_ancestry_string}')
             WHERE ancestry_string LIKE '#{old_ancestry_string}%'
